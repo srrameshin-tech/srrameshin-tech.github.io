@@ -77,8 +77,9 @@ function getScheduledAmount(monthNo) {
 
 // Generate WhatsApp message
 function generateWAMessage(member, payment, group, allPayments) {
-  // Only this member's paid payments
-  const memberPayments = allPayments.filter(p=>p.memberId===member.id&&p.status==="Paid");
+  // Only this member's paid payments - strict string comparison
+  const memberId = String(member.id).trim();
+  const memberPayments = allPayments.filter(p=> String(p.memberId).trim() === memberId && p.status==="Paid");
   const actualTotalPaid = memberPayments.reduce((s,p)=>s+Number(p.amount||0),0);
 
   const monthNo = getMonthNo(group?.startMonth, payment.month);
@@ -1004,4 +1005,3 @@ ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
 </script>
 </body>
 </html>
-
