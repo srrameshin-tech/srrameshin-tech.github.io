@@ -1730,6 +1730,19 @@ function Dashboard({members,payments,setPayments,groups}) {
           if(phoneMembers.length===0) return alert("Phone number உள்ள members இல்லை!");
           setSending(true);setSentCount(0);
           let count=0;
+          const today2=new Date();
+          const isOD=today2.getDate()>19;
+          const dStr=`19-${String(today2.getMonth()+1).padStart(2,"0")}-${today2.getFullYear()}`;
+
+          const openMsg=(m,msg)=>{
+            const phone=m.phone.replace(/\D/g,"");
+            const url=`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+            const a=document.createElement("a");
+            a.href=url;a.target="_blank";a.rel="noopener";
+            document.body.appendChild(a);a.click();
+            document.body.removeChild(a);
+          };
+
           if(bulkType==="reminder"||bulkType==="both"){
             const paidNames=payments.filter(p=>p.month===tm&&p.status==="Paid").map(p=>p.memberName);
             const pendingM=filtM.filter(m=>!paidNames.includes(m.name)&&m.phone);
@@ -1738,12 +1751,12 @@ function Dashboard({members,payments,setPayments,groups}) {
               const grp=groups.find(g=>g.id===m.groupId);
               const mNo=getMonthNo(grp?.startMonth,tm);
               const amt=getScheduledAmount(mNo);
-              const msg=isOverdue?
+              const msg=isOD?
                 `🔔 *வணக்கம் ${m.name}*\n\n⚠️ *KMBSC தவணை நிலுவை உள்ளது!*\n\n• மாதம் : *${tm}*\n• தவணை தொகை : *${fmt(amt)}*\n\n💰 உடனே செலுத்தவும்! 🙏\n*KMBSC Team*`
-                :`🔔 *வணக்கம் ${m.name}*\n\n📅 *KMBSC மாத தவணை நினைவூட்டல்*\n\n• மாதம் : *${tm}*\n• தவணை தொகை : *${fmt(amt)}*\n• கடைசி தேதி : *${dueDateStr}*\n\n⚠️ இன்னும் செலுத்தவில்லை!\nஉடனே செலுத்தவும். 🙏\n*KMBSC Team*`;
-              window.open(`https://wa.me/${m.phone.replace(/\D/g,"")}?text=${encodeURIComponent(msg)}`,"_blank");
+                :`🔔 *வணக்கம் ${m.name}*\n\n📅 *KMBSC மாத தவணை நினைவூட்டல்*\n\n• மாதம் : *${tm}*\n• தவணை தொகை : *${fmt(amt)}*\n• கடைசி தேதி : *${dStr}*\n\n⚠️ இன்னும் செலுத்தவில்லை!\nஉடனே செலுத்தவும். 🙏\n*KMBSC Team*`;
+              openMsg(m,msg);
               count++;setSentCount(count);
-              await new Promise(r=>setTimeout(r,1500));
+              await new Promise(r=>setTimeout(r,2000));
             }
           }
           if(bulkType==="custom"||bulkType==="both"){
@@ -1751,13 +1764,13 @@ function Dashboard({members,payments,setPayments,groups}) {
             for(let i=0;i<phoneMembers.length;i++){
               const m=phoneMembers[i];
               const msg=customMsg.replace(/\[NAME\]/g,m.name);
-              window.open(`https://wa.me/${m.phone.replace(/\D/g,"")}?text=${encodeURIComponent(msg)}`,"_blank");
+              openMsg(m,msg);
               count++;setSentCount(count);
-              await new Promise(r=>setTimeout(r,1500));
+              await new Promise(r=>setTimeout(r,2000));
             }
           }
           setSending(false);
-          alert(`✅ ${count} members-க்கு message அனுப்பப்பட்டது!`);
+          alert(`✅ ${count} members-க்கு WhatsApp open ஆச்சு!`);
         };
 
         return(
