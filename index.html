@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S. Ramesh | Digital Tools</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --yellow: #FFE040;
+    --yellow2: #FFD000;
+    --deep: #07070D;
+    --card: #0F0F18;
+    --card2: #141420;
+    --border: #22223A;
+    --text: #E8E8F0;
+    --muted: #6A6A8A;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--deep);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background:
+      radial-gradient(ellipse 60% 40% at 15% 10%, rgba(255,224,64,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 50% at 85% 90%, rgba(80,40,180,0.05) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 660px;
+    margin: 0 auto;
+    padding: 52px 24px 80px;
+  }
+
+  .header {
+    margin-bottom: 52px;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--yellow);
+    border: 1px solid rgba(255,224,64,0.25);
+    background: rgba(255,224,64,0.06);
+    padding: 5px 12px;
+    border-radius: 3px;
+    margin-bottom: 20px;
+  }
+
+  .badge::before {
+    content: '';
+    width: 5px; height: 5px;
+    background: var(--yellow);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  .name-en {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(32px, 9vw, 52px);
+    font-weight: 700;
+    line-height: 1.1;
+    color: #fff;
+    letter-spacing: -0.02em;
+  }
+
+  .name-en em {
+    font-style: normal;
+    color: var(--yellow);
+    text-shadow: 0 0 30px rgba(255,224,64,0.4);
+  }
+
+  .name-ta {
+    font-family: 'Noto Sans Tamil', sans-serif;
+    font-size: 15px;
+    color: #fff;
+    margin-top: 6px;
+    font-weight: 600;
+  }
+
+  .subtitle {
+    font-size: 11px;
+    color: #fff;
+    letter-spacing: 0.14em;
+    margin-top: 6px;
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 20px 0;
+  }
+
+  .bar-line {
+    width: 40px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--yellow), transparent);
+  }
+
+  .bar-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--yellow);
+    box-shadow: 0 0 8px var(--yellow);
+  }
+
+  .intro {
+    font-size: 13px;
+    color: #fff;
+    line-height: 1.8;
+    font-family: 'Noto Sans Tamil', sans-serif;
+  }
+
+  .section-label {
+    font-size: 9px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+
+  .apps-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .app-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.22s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .app-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--yellow);
+    transform: scaleY(0);
+    transition: transform 0.22s ease;
+    transform-origin: bottom;
+  }
+
+  .app-card:hover {
+    border-color: rgba(255,224,64,0.3);
+    background: var(--card2);
+    transform: translateX(4px);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.5);
+  }
+
+  .app-card:hover::before { transform: scaleY(1); }
+
+  .app-card:nth-child(1) { animation: fadeUp 0.4s 0.1s ease both; }
+  .app-card:nth-child(2) { animation: fadeUp 0.4s 0.15s ease both; }
+  .app-card:nth-child(3) { animation: fadeUp 0.4s 0.2s ease both; }
+  .app-card:nth-child(4) { animation: fadeUp 0.4s 0.25s ease both; }
+  .app-card:nth-child(5) { animation: fadeUp 0.4s 0.3s ease both; }
+  .app-card:nth-child(6) { animation: fadeUp 0.4s 0.35s ease both; }
+
+  .app-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .app-info { flex: 1; min-width: 0; }
+
+  .app-name-en {
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--yellow);
+    margin-bottom: 3px;
+    white-space: normal;
+    line-height: 1.4;
+    letter-spacing: 0.02em;
+  }
+
+  .app-name-ta {
+    font-family: 'Noto Sans Tamil', sans-serif;
+    font-size: 12px;
+    color: #aaa;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .app-arrow {
+    color: var(--border);
+    font-size: 16px;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .app-card:hover .app-arrow {
+    color: var(--yellow);
+    transform: translateX(3px);
+  }
+
+  .i1 { background: rgba(255,224,64,0.1); }
+  .i2 { background: rgba(46,200,100,0.1); }
+  .i3 { background: rgba(220,60,60,0.1); }
+  .i4 { background: rgba(140,80,220,0.1); }
+  .i5 { background: rgba(50,140,220,0.1); }
+  .i6 { background: rgba(220,110,30,0.1); }
+
+  .footer {
+    margin-top: 52px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    animation: fadeUp 0.4s 0.4s ease both;
+  }
+
+  .footer-left { font-size: 9px; color: var(--muted); letter-spacing: 0.12em; }
+
+  .status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 9px;
+    color: #2ECC71;
+    letter-spacing: 0.1em;
+  }
+
+  .status-dot {
+    width: 6px; height: 6px;
+    background: #2ECC71;
+    border-radius: 50%;
+    box-shadow: 0 0 6px #2ECC71;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header class="header">
+    <div class="badge">sramesh.in</div>
+    <h1 class="name-en">S. <em>RAMESH</em></h1>
+    <p class="name-ta">எஸ். ரமேஷ்</p>
+    <p class="subtitle">COMMUNITY DIGITAL TOOLS &nbsp;·&nbsp; COIMBATORE, TN</p>
+    <div class="bar"><div class="bar-line"></div><div class="bar-dot"></div></div>
+    <p class="intro">கோவில், சமூக சேமிப்பு மற்றும்<br>தனிப்பட்ட நிர்வாகத்திற்கான டிஜிட்டல் கருவிகள்.</p>
+  </header>
+
+  <p class="section-label">// Applications</p>
+
+  <div class="apps-grid">
+
+    <a class="app-card" href="https://temple.sramesh.in">
+      <div class="app-icon i1">🏛️</div>
+      <div class="app-info">
+        <div class="app-name-en">Temple Accounts</div>
+        <div class="app-name-ta">கோவில் கணக்குகள் · Sankagiri</div>
+      </div>
+      <span class="app-arrow">→</span>
+    </a>
+
+    <a class="app-card" href="https://kmbsc.sramesh.in">
+      <div class="app-icon i2">💰</div>
+      <div class="app-info">
+        <div class="app-name-en">KMBSC Savings Chit Fund</div>
+        <div class="app-name-ta">சமூக சேமிப்பு · 11 Members</div>
+      </div>
+      <span class="app-arrow">→</span>
+    </a>
+
+    <a class="app-card" href="https://kovil.sramesh.in">
+      <div class="app-icon i3">🙏</div>
+      <div class="app-info">
+        <div class="app-name-en">Devotional Messages</div>
+        <div class="app-name-ta">திருக்கோவில் அருள் செய்தி</div>
+      </div>
+      <span class="app-arrow">→</span>
+    </a>
+
+    <a class="app-card" href="https://pooja.sramesh.in">
+      <div class="app-icon i4">📅</div>
+      <div class="app-info">
+        <div class="app-name-en">Pooja Reminder</div>
+        <div class="app-name-ta">கோவில் பூஜை நினைவூட்டல் · 2026–2036</div>
+      </div>
+      <span class="app-arrow">→</span>
+    </a>
+
+    <a class="app-card" href="https://expense.sramesh.in">
+      <div class="app-icon i5">📊</div>
+      <div class="app-info">
+        <div class="app-name-en">Expense Tracker</div>
+        <div class="app-name-ta">செலவு கணக்கு</div>
+      </div>
+      <span class="app-arrow">→</span>
+    </a>
+
+    <a class="app-card" href="https://srrameshin-tech.github.io/budgettracker">
+      <div class="app-icon i6">🗂️</div>
+      <div class="app-info">
+        <div class="app-name-en">Budget Tracker</div>
+        <div class="app-name-ta">பட்ஜெட் டிராக்கர்</div>
+      </div>
+      <span class="app-arrow">→</span>
+    </a>
+
+  </div>
+
+  <footer class="footer">
+    <span class="footer-left">© 2026 SRAMESH.IN</span>
+    <div class="status"><div class="status-dot"></div>ALL SYSTEMS LIVE</div>
+  </footer>
+
+</div>
+</body>
+</html>
