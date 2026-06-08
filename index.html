@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S. Ramesh | Digital Tools</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;600;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --y: #FFD600;
+    --g: #0A7A3E;
+    --g2: #12C760;
+    --r: #E8002D;
+    --bk: #0A0A0A;
+    --wh: #FFFFFF;
+    --off: #F8F8F6;
+    --card: #111111;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--wh);
+    color: var(--bk);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── HERO SECTION ── */
+  .hero {
+    background: var(--bk);
+    position: relative;
+    overflow: hidden;
+    padding: 0 0 0 0;
+  }
+
+  /* Diagonal yellow slash */
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -40px;
+    width: 220px; height: 220px;
+    background: var(--y);
+    transform: rotate(25deg);
+    z-index: 0;
+    opacity: 0.9;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -30px; left: 60px;
+    width: 80px; height: 80px;
+    background: var(--r);
+    border-radius: 50%;
+    z-index: 0;
+    opacity: 0.7;
+  }
+
+  .hero-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 660px;
+    margin: 0 auto;
+    padding: 48px 28px 44px;
+  }
+
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--g);
+    color: var(--wh);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 2px;
+    margin-bottom: 28px;
+  }
+
+  .hero-tag::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--y);
+    border-radius: 50%;
+    animation: blink 1.5s infinite;
+  }
+
+  .hero-name {
+    font-family: 'Bebas Neue', cursive;
+    font-size: clamp(64px, 18vw, 110px);
+    line-height: 0.9;
+    color: var(--wh);
+    letter-spacing: 0.04em;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .hero-name .accent {
+    color: var(--y);
+    display: block;
+  }
+
+  .hero-name .dot {
+    color: var(--r);
+  }
+
+  .hero-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+
+  .hero-ta {
+    font-family: 'Noto Sans Tamil', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--wh);
+  }
+
+  .hero-divider {
+    width: 4px; height: 4px;
+    background: var(--g2);
+    border-radius: 50%;
+  }
+
+  .hero-loc {
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  /* Color bar */
+  .color-bar {
+    display: flex;
+    height: 6px;
+  }
+  .cb1 { flex: 3; background: var(--g); }
+  .cb2 { flex: 2; background: var(--y); }
+  .cb3 { flex: 1; background: var(--r); }
+
+  /* ── INTRO STRIP ── */
+  .intro-strip {
+    background: var(--off);
+    padding: 24px 28px;
+    border-bottom: 1px solid #E8E8E8;
+  }
+
+  .intro-inner {
+    max-width: 660px;
+    margin: 0 auto;
+  }
+
+  .intro-text {
+    font-family: 'Noto Sans Tamil', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--bk);
+    line-height: 1.8;
+  }
+
+  /* ── APPS SECTION ── */
+  .apps-section {
+    max-width: 660px;
+    margin: 0 auto;
+    padding: 36px 28px 80px;
+  }
+
+  .section-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 28px;
+    letter-spacing: 0.08em;
+    color: var(--bk);
+  }
+
+  .section-line {
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(90deg, var(--bk), transparent);
+  }
+
+  .section-count {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--g);
+    background: rgba(10,122,62,0.1);
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+
+  /* Cards */
+  .apps-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .app-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--card);
+    border-radius: 14px;
+    padding: 18px 20px;
+    text-decoration: none;
+    color: var(--wh);
+    transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+    overflow: hidden;
+    border: 1.5px solid transparent;
+    animation: fadeUp 0.4s ease both;
+  }
+
+  .app-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--g), var(--y));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+  }
+
+  .app-card:hover {
+    transform: translateY(-3px) scale(1.01);
+    border-color: rgba(255,214,0,0.3);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,214,0,0.1);
+  }
+
+  .app-card:hover::before { transform: scaleX(1); }
+
+  .app-card:nth-child(1) { animation-delay: 0.05s; }
+  .app-card:nth-child(2) { animation-delay: 0.1s; }
+  .app-card:nth-child(3) { animation-delay: 0.15s; }
+  .app-card:nth-child(4) { animation-delay: 0.2s; }
+  .app-card:nth-child(5) { animation-delay: 0.25s; }
+  .app-card:nth-child(6) { animation-delay: 0.3s; }
+
+  .app-icon {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.07);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .app-info { flex: 1; min-width: 0; }
+
+  .app-name-en {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--y);
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+
+  .app-name-ta {
+    font-family: 'Noto Sans Tamil', sans-serif;
+    font-size: 11px;
+    color: rgba(255,255,255,0.45);
+    font-weight: 400;
+  }
+
+  .app-badge {
+    flex-shrink: 0;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: rgba(255,255,255,0.4);
+    transition: all 0.2s;
+  }
+
+  .app-card:hover .app-badge {
+    background: var(--y);
+    border-color: var(--y);
+    color: var(--bk);
+    font-weight: 700;
+  }
+
+  /* Footer */
+  .footer {
+    background: var(--bk);
+    padding: 20px 28px;
+  }
+
+  .footer-inner {
+    max-width: 660px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .footer-left {
+    font-size: 10px;
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 0.1em;
+    font-weight: 500;
+  }
+
+  .footer-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    color: var(--g2);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+
+  .status-dot {
+    width: 7px; height: 7px;
+    background: var(--g2);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--g2);
+    animation: blink 1.5s infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.2; }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">sramesh.in</div>
+    <h1 class="hero-name">
+      S<span class="dot">.</span><br>
+      <span class="accent">RAMESH</span>
+    </h1>
+    <div class="hero-meta">
+      <span class="hero-ta">எஸ். ரமேஷ்</span>
+      <div class="hero-divider"></div>
+      <span class="hero-loc">Community Digital Tools · Coimbatore, TN</span>
+    </div>
+  </div>
+  <div class="color-bar">
+    <div class="cb1"></div>
+    <div class="cb2"></div>
+    <div class="cb3"></div>
+  </div>
+</section>
+
+<!-- INTRO -->
+<div class="intro-strip">
+  <div class="intro-inner">
+    <p class="intro-text">கோவில், சமூக சேமிப்பு மற்றும் தனிப்பட்ட நிர்வாகத்திற்கான டிஜிட்டல் கருவிகள்.</p>
+  </div>
+</div>
+
+<!-- APPS -->
+<section class="apps-section">
+  <div class="section-head">
+    <h2 class="section-title">Applications</h2>
+    <div class="section-line"></div>
+    <span class="section-count">7 Apps</span>
+  </div>
+
+  <div class="apps-grid">
+
+    <a class="app-card" href="https://temple.sramesh.in">
+      <div class="app-icon">🏛️</div>
+      <div class="app-info">
+        <div class="app-name-en">Temple Accounts</div>
+        <div class="app-name-ta">கோவில் கணக்குகள் · Sankagiri</div>
+      </div>
+      <div class="app-badge">→</div>
+    </a>
+
+    <a class="app-card" href="https://kmbsc.sramesh.in">
+      <div class="app-icon">💰</div>
+      <div class="app-info">
+        <div class="app-name-en">KMBSC Savings Chit Fund</div>
+        <div class="app-name-ta">சமூக சேமிப்பு · 11 Members</div>
+      </div>
+      <div class="app-badge">→</div>
+    </a>
+
+    <a class="app-card" href="https://kovil.sramesh.in">
+      <div class="app-icon">🙏</div>
+      <div class="app-info">
+        <div class="app-name-en">Devotional Messages</div>
+        <div class="app-name-ta">திருக்கோவில் அருள் செய்தி</div>
+      </div>
+      <div class="app-badge">→</div>
+    </a>
+
+    <a class="app-card" href="https://pooja.sramesh.in">
+      <div class="app-icon">📅</div>
+      <div class="app-info">
+        <div class="app-name-en">Pooja Reminder</div>
+        <div class="app-name-ta">கோவில் பூஜை நினைவூட்டல் · 2026–2036</div>
+      </div>
+      <div class="app-badge">→</div>
+    </a>
+
+    <a class="app-card" href="https://expense.sramesh.in">
+      <div class="app-icon">📊</div>
+      <div class="app-info">
+        <div class="app-name-en">Expense Tracker</div>
+        <div class="app-name-ta">செலவு கணக்கு</div>
+      </div>
+      <div class="app-badge">→</div>
+    </a>
+
+    <a class="app-card" href="https://budget.sramesh.in">
+      <div class="app-icon">🗂️</div>
+      <div class="app-info">
+        <div class="app-name-en">Budget Tracker</div>
+        <div class="app-name-ta">பட்ஜெட் டிராக்கர்</div>
+      </div>
+      <div class="app-badge">→</div>
+    </a>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <span class="footer-left">© 2026 SRAMESH.IN · ALL RIGHTS RESERVED</span>
+    <div class="footer-status"><div class="status-dot"></div>LIVE</div>
+  </div>
+</footer>
+
+</body>
+</html>
