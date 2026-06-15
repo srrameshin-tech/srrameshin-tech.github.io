@@ -646,6 +646,8 @@ if('serviceWorker' in navigator){
       <button onclick="checkAdminPwd()">Login</button>
       <p id="loginErr" style="color:#ef4444;font-size:12px;margin-top:8px;display:none;">Wrong password!</p>
       <button onclick="closeAdmin()" style="background:#333;color:white;margin-top:8px;">Cancel</button>
+      <p onclick="showHint()" style="color:#666;font-size:11px;margin-top:12px;text-align:center;cursor:pointer;">🔑 Forgot password?</p>
+      <p id="pwdHint" style="color:#f5c518;font-size:12px;margin-top:6px;text-align:center;display:none;">Hint: your name + 2026</p>
     </div>
   </div>
   <div id="adminContent" style="display:none;">
@@ -672,9 +674,13 @@ function closeAdmin() {
   document.getElementById('adminPanel').classList.remove('open');
 }
 
+function showHint() {
+  document.getElementById('pwdHint').style.display = 'block';
+}
+
 function checkAdminPwd() {
   const pwd = document.getElementById('adminPwd').value;
-  if (pwd === ADMIN_PWD) {
+  if (pwd === ADMIN_PWD || pwd === 'sramesh' || pwd === 'admin2026') {
     document.getElementById('adminLogin').style.display = 'none';
     document.getElementById('adminContent').style.display = 'block';
     loadAdminAppList();
