@@ -382,6 +382,122 @@
     from { opacity: 0; transform: translateY(20px); }
     to   { opacity: 1; transform: translateY(0); }
   }
+
+  /* Admin Toggle Styles */
+  .admin-toggle-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.4);
+    font-size: 10px;
+    padding: 6px 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    z-index: 100;
+    letter-spacing: 1px;
+  }
+  .admin-panel {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.9);
+    z-index: 200;
+    overflow-y: auto;
+    padding: 20px;
+  }
+  .admin-panel.open { display: block; }
+  .admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 16px;
+  }
+  .admin-title { color: #f5c518; font-size: 18px; font-weight: 700; }
+  .admin-close {
+    background: #333;
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  .admin-login {
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 24px;
+    max-width: 320px;
+    margin: 60px auto;
+  }
+  .admin-login h3 { color: #f5c518; margin-bottom: 16px; font-size: 16px; }
+  .admin-login input {
+    width: 100%;
+    background: #1a1a1a;
+    border: 1px solid #444;
+    color: white;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 16px;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+  }
+  .admin-login button {
+    width: 100%;
+    background: #f5c518;
+    border: none;
+    color: black;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 15px;
+  }
+  .admin-app-list { display: flex; flex-direction: column; gap: 10px; }
+  .admin-app-item {
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .admin-app-icon { font-size: 24px; }
+  .admin-app-name { flex: 1; color: white; font-size: 14px; font-weight: 600; }
+  .toggle-switch {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+  .toggle-switch input { display: none; }
+  .toggle-slider {
+    position: absolute;
+    inset: 0;
+    background: #333;
+    border-radius: 24px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  .toggle-slider::before {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    left: 3px;
+    top: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: 0.3s;
+  }
+  .toggle-switch input:checked + .toggle-slider { background: #22c55e; }
+  .toggle-switch input:checked + .toggle-slider::before { transform: translateX(20px); }
+  .app-card.hidden-app { display: none; }
 </style>
 </head>
 <body>
@@ -517,5 +633,104 @@ if('serviceWorker' in navigator){
 }
 </script>
 
+
+<!-- Admin Toggle Button -->
+<button class="admin-toggle-btn" onclick="openAdmin()">⚙ ADMIN</button>
+
+<!-- Admin Panel -->
+<div class="admin-panel" id="adminPanel">
+  <div id="adminLogin">
+    <div class="admin-login">
+      <h3>🔐 Admin Login</h3>
+      <input type="password" id="adminPwd" placeholder="Password" onkeyup="if(event.key==='Enter')checkAdminPwd()"/>
+      <button onclick="checkAdminPwd()">Login</button>
+      <p id="loginErr" style="color:#ef4444;font-size:12px;margin-top:8px;display:none;">Wrong password!</p>
+      <button onclick="closeAdmin()" style="background:#333;color:white;margin-top:8px;">Cancel</button>
+    </div>
+  </div>
+  <div id="adminContent" style="display:none;">
+    <div class="admin-header">
+      <span class="admin-title">⚙ App Visibility Manager</span>
+      <button class="admin-close" onclick="closeAdmin()">✕ Close</button>
+    </div>
+    <div class="admin-app-list" id="adminAppList"></div>
+  </div>
+</div>
+
+<script>
+const ADMIN_PWD = 'sramesh2026';
+
+function openAdmin() {
+  document.getElementById('adminPanel').classList.add('open');
+  document.getElementById('adminLogin').style.display = 'block';
+  document.getElementById('adminContent').style.display = 'none';
+  document.getElementById('adminPwd').value = '';
+  document.getElementById('loginErr').style.display = 'none';
+}
+
+function closeAdmin() {
+  document.getElementById('adminPanel').classList.remove('open');
+}
+
+function checkAdminPwd() {
+  const pwd = document.getElementById('adminPwd').value;
+  if (pwd === ADMIN_PWD) {
+    document.getElementById('adminLogin').style.display = 'none';
+    document.getElementById('adminContent').style.display = 'block';
+    loadAdminAppList();
+  } else {
+    document.getElementById('loginErr').style.display = 'block';
+  }
+}
+
+function loadAdminAppList() {
+  const cards = document.querySelectorAll('#appsGrid .app-card');
+  const saved = JSON.parse(localStorage.getItem('appVisibility') || '{}');
+  const list = document.getElementById('adminAppList');
+  list.innerHTML = '';
+  cards.forEach((card, i) => {
+    const icon = card.querySelector('.app-icon') ? card.querySelector('.app-icon').innerHTML : '📱';
+    const name = card.querySelector('.app-name-en') ? card.querySelector('.app-name-en').textContent : 'App ' + (i+1);
+    const key = 'app_' + i;
+    const isVisible = saved[key] !== false;
+    const item = document.createElement('div');
+    item.className = 'admin-app-item';
+    item.innerHTML = `
+      <div class="admin-app-icon">${icon}</div>
+      <div class="admin-app-name">${name}</div>
+      <label class="toggle-switch">
+        <input type="checkbox" ${isVisible ? 'checked' : ''} onchange="toggleApp(${i}, this.checked)"/>
+        <span class="toggle-slider"></span>
+      </label>`;
+    list.appendChild(item);
+  });
+}
+
+function toggleApp(index, visible) {
+  const saved = JSON.parse(localStorage.getItem('appVisibility') || '{}');
+  saved['app_' + index] = visible;
+  localStorage.setItem('appVisibility', JSON.stringify(saved));
+  applyVisibility();
+  updateCount();
+}
+
+function applyVisibility() {
+  const cards = document.querySelectorAll('#appsGrid .app-card');
+  const saved = JSON.parse(localStorage.getItem('appVisibility') || '{}');
+  cards.forEach((card, i) => {
+    const isVisible = saved['app_' + i] !== false;
+    card.classList.toggle('hidden-app', !isVisible);
+  });
+}
+
+function updateCount() {
+  const visible = document.querySelectorAll('#appsGrid .app-card:not(.hidden-app)').length;
+  document.getElementById('appCount').textContent = visible + ' Apps';
+}
+
+// Apply on page load
+applyVisibility();
+updateCount();
+</script>
 </body>
 </html>
