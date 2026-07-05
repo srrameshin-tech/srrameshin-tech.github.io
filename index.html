@@ -697,7 +697,7 @@ function loadAdminAppList() {
   cards.forEach((card, i) => {
     const icon = card.querySelector('.app-icon') ? card.querySelector('.app-icon').innerHTML : '📱';
     const name = card.querySelector('.app-name-en') ? card.querySelector('.app-name-en').textContent : 'App ' + (i+1);
-    const key = 'app_' + i;
+    const key = card.getAttribute('href') || ('app_' + i);
     const isVisible = saved[key] !== false;
     const item = document.createElement('div');
     item.className = 'admin-app-item';
@@ -705,16 +705,16 @@ function loadAdminAppList() {
       <div class="admin-app-icon">${icon}</div>
       <div class="admin-app-name">${name}</div>
       <label class="toggle-switch">
-        <input type="checkbox" ${isVisible ? 'checked' : ''} onchange="toggleApp(${i}, this.checked)"/>
+        <input type="checkbox" ${isVisible ? 'checked' : ''} onchange="toggleApp('${key}', this.checked)"/>
         <span class="toggle-slider"></span>
       </label>`;
     list.appendChild(item);
   });
 }
 
-function toggleApp(index, visible) {
+function toggleApp(key, visible) {
   const saved = JSON.parse(localStorage.getItem('appVisibility') || '{}');
-  saved['app_' + index] = visible;
+  saved[key] = visible;
   localStorage.setItem('appVisibility', JSON.stringify(saved));
   applyVisibility();
   updateCount();
@@ -724,7 +724,8 @@ function applyVisibility() {
   const cards = document.querySelectorAll('#appsGrid .app-card');
   const saved = JSON.parse(localStorage.getItem('appVisibility') || '{}');
   cards.forEach((card, i) => {
-    const isVisible = saved['app_' + i] !== false;
+    const key = card.getAttribute('href') || ('app_' + i);
+    const isVisible = saved[key] !== false;
     card.classList.toggle('hidden-app', !isVisible);
   });
 }
