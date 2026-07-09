@@ -14,6 +14,8 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>S. Ramesh | Digital Tools</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;600;700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <style>
   @font-face {
     font-family: 'Cavolini';
@@ -716,6 +718,26 @@ if('serviceWorker' in navigator){
 <script>
 const ADMIN_PWD = 'sramesh2026';
 
+const firebaseConfig = {
+  apiKey: "AIzaSyBVGVu59jDZybPFAX_pRisSrQRoXHQ0EWY",
+  authDomain: "kmbsc-chit.firebaseapp.com",
+  databaseURL: "https://kmbsc-chit-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "kmbsc-chit",
+  storageBucket: "kmbsc-chit.firebasestorage.app",
+  messagingSenderId: "511325458985",
+  appId: "1:511325458985:web:a7597bcf0f89b71405c238"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const VIS_REF = db.ref('portalVisibility');
+
+// keyify: '/' chars in href break as a Firebase path segment, so sanitize
+function visKey(rawKey) {
+  return rawKey.replace(/[.#$\/\[\]]/g, '_');
+}
+
+let visState = {}; // in-memory, synced with Firebase; localStorage used only as offline fallback
+
 function openAdmin() {
   document.getElementById('adminPanel').classList.add('open');
   document.getElementById('adminLogin').style.display = 'block';
@@ -745,14 +767,13 @@ function checkAdminPwd() {
 
 function loadAdminAppList() {
   const cards = document.querySelectorAll('#appsGrid .app-card');
-  const saved = JSON.parse(localStorage.getItem('appVisibility') || '{}');
   const list = document.getElementById('adminAppList');
   list.innerHTML = '';
   cards.forEach((card, i) => {
     const icon = card.querySelector('.app-icon') ? card.querySelector('.app-icon').innerHTML : '📱';
     const name = card.querySelector('.app-name-en') ? card.querySelector('.app-name-en').textContent : 'App ' + (i+1);
-    const key = card.getAttribute('href') || ('app_' + i);
-    const isVisible = saved[key] !== false;
+    const key = visKey(card.getAttribute('href') || ('app_' + i));
+    const isVisible = visState[key] !== false;
     const item = document.createElement('div');
     item.className = 'admin-app-item';
     item.innerHTML = `
@@ -767,19 +788,18 @@ function loadAdminAppList() {
 }
 
 function toggleApp(key, visible) {
-  const saved = JSON.parse(localStorage.getItem('appVisibility') || '{}');
-  saved[key] = visible;
-  localStorage.setItem('appVisibility', JSON.stringify(saved));
+  visState[key] = visible;
+  localStorage.setItem('appVisibility', JSON.stringify(visState)); // offline fallback cache
+  VIS_REF.child(key).set(visible); // source of truth
   applyVisibility();
   updateCount();
 }
 
 function applyVisibility() {
   const cards = document.querySelectorAll('#appsGrid .app-card');
-  const saved = JSON.parse(localStorage.getItem('appVisibility') || '{}');
   cards.forEach((card, i) => {
-    const key = card.getAttribute('href') || ('app_' + i);
-    const isVisible = saved[key] !== false;
+    const key = visKey(card.getAttribute('href') || ('app_' + i));
+    const isVisible = visState[key] !== false;
     card.classList.toggle('hidden-app', !isVisible);
   });
 }
@@ -789,9 +809,23 @@ function updateCount() {
   document.getElementById('appCount').textContent = visible + ' Apps';
 }
 
-// Apply on page load
+// Apply cached state immediately (fast paint, no flash of all-apps)
+try {
+  visState = JSON.parse(localStorage.getItem('appVisibility') || '{}');
+} catch (e) { visState = {}; }
 applyVisibility();
 updateCount();
+
+// Then sync live from Firebase (source of truth) — real-time listener
+VIS_REF.on('value', snap => {
+  visState = snap.val() || {};
+  localStorage.setItem('appVisibility', JSON.stringify(visState));
+  applyVisibility();
+  updateCount();
+  if (document.getElementById('adminContent').style.display === 'block') {
+    loadAdminAppList();
+  }
+});
 </script>
 </body>
 </html>
