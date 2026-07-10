@@ -773,7 +773,7 @@ function loadAdminAppList() {
     const icon = card.querySelector('.app-icon') ? card.querySelector('.app-icon').innerHTML : '📱';
     const name = card.querySelector('.app-name-en') ? card.querySelector('.app-name-en').textContent : 'App ' + (i+1);
     const key = visKey(card.getAttribute('href') || ('app_' + i));
-    const isVisible = visState[key] === true; // opt-in only: fail-safe hidden by default
+    const isVisible = visState[key] !== false; // fail-safe VISIBLE: only explicit false hides it
     const item = document.createElement('div');
     item.className = 'admin-app-item';
     item.innerHTML = `
@@ -799,7 +799,7 @@ function applyVisibility() {
   const cards = document.querySelectorAll('#appsGrid .app-card');
   cards.forEach((card, i) => {
     const key = visKey(card.getAttribute('href') || ('app_' + i));
-    const isVisible = visState[key] === true; // opt-in only: fail-safe hidden by default
+    const isVisible = visState[key] !== false; // fail-safe VISIBLE: only explicit false hides it
     card.classList.toggle('hidden-app', !isVisible);
   });
 }
