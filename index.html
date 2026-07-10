@@ -835,13 +835,33 @@ VIS_REF.on('value', snap => {
 });
 
 // Real connection status (not a hardcoded label)
+let reconnectTimer = null;
+
 function setLiveStatus(connected, label) {
   const dot = document.querySelector('.status-dot');
   const wrap = document.querySelector('.footer-status');
   if (!dot || !wrap) return;
   dot.style.background = connected ? '#22c55e' : '#ef4444';
   wrap.lastChild.textContent = label || (connected ? 'LIVE' : 'OFFLINE');
+
+  if (connected) {
+    // Back online — cancel any pending forced-reconnect retry
+    if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
+  } else if (!reconnectTimer) {
+    // Stayed disconnected — don't wait on the browser's own backoff,
+    // force Firebase to drop and re-establish the socket sooner
+    reconnectTimer = setTimeout(forceReconnect, 15000);
+  }
 }
+
+function forceReconnect() {
+  reconnectTimer = null;
+  db.goOffline();
+  setTimeout(() => { db.goOnline(); }, 500);
+  // If still not connected after this attempt, try again
+  reconnectTimer = setTimeout(forceReconnect, 15000);
+}
+
 db.ref('.info/connected').on('value', snap => {
   setLiveStatus(snap.val() === true);
 });
