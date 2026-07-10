@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sramesh-v2';
+const CACHE_NAME = 'sramesh-v3';
 
 self.addEventListener('install', e => { self.skipWaiting(); });
 
@@ -11,14 +11,14 @@ self.addEventListener('activate', e => {
   self.clients.claim();
 });
 
-// network-first strategy: always try the live server first,
+// network-first strategy: always try the live server first, bypass HTTP cache too,
 // only fall back to cache if offline
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   if (e.request.url.includes('googleapis.com') ||
       e.request.url.includes('gstatic.com')) return;
   e.respondWith(
-    fetch(e.request)
+    fetch(e.request, { cache: 'no-store' })
       .then(res => {
         const resClone = res.clone();
         caches.open(CACHE_NAME).then(c => c.put(e.request, resClone));
