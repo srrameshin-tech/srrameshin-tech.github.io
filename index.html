@@ -790,7 +790,10 @@ function loadAdminAppList() {
 function toggleApp(key, visible) {
   visState[key] = visible;
   localStorage.setItem('appVisibility', JSON.stringify(visState)); // offline fallback cache
-  VIS_REF.child(key).set(visible); // source of truth
+  VIS_REF.child(key).set(visible).catch(err => {
+    console.error('Firebase write failed:', err);
+    alert('⚠ Save fail ஆச்சு (network/permission issue). Firebase-ku write aagala, connection check pannunga: ' + err.message);
+  });
   applyVisibility();
   updateCount();
 }
@@ -825,6 +828,21 @@ VIS_REF.on('value', snap => {
   if (document.getElementById('adminContent').style.display === 'block') {
     loadAdminAppList();
   }
+}, err => {
+  console.error('Firebase portalVisibility read failed:', err);
+  setLiveStatus(false, 'Sync error');
+});
+
+// Real connection status (not a hardcoded label)
+function setLiveStatus(connected, label) {
+  const dot = document.querySelector('.status-dot');
+  const wrap = document.querySelector('.footer-status');
+  if (!dot || !wrap) return;
+  dot.style.background = connected ? '#22c55e' : '#ef4444';
+  wrap.lastChild.textContent = label || (connected ? 'LIVE' : 'OFFLINE');
+}
+db.ref('.info/connected').on('value', snap => {
+  setLiveStatus(snap.val() === true);
 });
 </script>
 </body>
