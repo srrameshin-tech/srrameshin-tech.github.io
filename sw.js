@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sramesh-v3';
+const CACHE_NAME = 'sramesh-v4';
 
 self.addEventListener('install', e => { self.skipWaiting(); });
 
