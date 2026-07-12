@@ -788,15 +788,44 @@ function loadAdminAppList() {
   });
 }
 
-function toggleApp(key, visible) {
+function showSyncError(msg) {
+  let banner = document.getElementById('syncErrBanner');
+  if (!banner) {
+    banner = document.createElement('div');
+    banner.id = 'syncErrBanner';
+    banner.style.cssText = 'position:fixed; top:0; left:0; right:0; z-index:9999; background:#dc2626; color:#fff; padding:12px 16px; font-size:13px; font-weight:700; text-align:center;';
+    document.body.appendChild(banner);
+  }
+  banner.textContent = msg;
+  banner.style.display = 'block';
+}
+function clearSyncError() {
+  const banner = document.getElementById('syncErrBanner');
+  if (banner) banner.style.display = 'none';
+}
+
+function toggleApp(key, visible, attempt) {
+  attempt = attempt || 1;
   visState[key] = visible;
   localStorage.setItem('appVisibility', JSON.stringify(visState)); // offline fallback cache
-  VIS_REF.child(key).set(visible).catch(err => {
-    console.error('Firebase write failed:', err);
-    alert('⚠ Save fail ஆச்சு (network/permission issue). Firebase-ku write aagala, connection check pannunga: ' + err.message);
-  });
   applyVisibility();
   updateCount();
+
+  VIS_REF.child(key).set(visible)
+    .then(() => VIS_REF.child(key).once('value')) // read back to CONFIRM it actually landed
+    .then(snap => {
+      const saved = snap.val();
+      if (saved !== visible) throw new Error('Verify mismatch: saved=' + saved + ' expected=' + visible);
+      clearSyncError();
+    })
+    .catch(err => {
+      console.error('Firebase write/verify failed (attempt ' + attempt + '):', err);
+      if (attempt < 5) {
+        setTimeout(() => toggleApp(key, visible, attempt + 1), 1500 * attempt);
+      } else {
+        showSyncError('⚠ "' + key + '" setting Firebase-ku save aagala (' + attempt + ' tries). Net check pannunga, admin panel-ah thirumba open pannunga.');
+      }
+    });
 }
 
 function applyVisibility() {
