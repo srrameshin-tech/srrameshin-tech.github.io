@@ -717,7 +717,12 @@ if('serviceWorker' in navigator){
 </div>
 
 <script>
-const ADMIN_PWD = 'sramesh2026';
+const ADMIN_PWD_HASH = '88310d133320c458fcfef5bb2df9bde3a70c7dc9145ab3f95207154163095a17'; // sha256("sramesh2026")
+async function sha256Hex(str) {
+  const enc = new TextEncoder().encode(str);
+  const buf = await crypto.subtle.digest('SHA-256', enc);
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
 
 const firebaseConfig = {
   apiKey: "AIzaSyBVGVu59jDZybPFAX_pRisSrQRoXHQ0EWY",
@@ -755,9 +760,9 @@ function showHint() {
   document.getElementById('pwdHint').style.display = 'block';
 }
 
-function checkAdminPwd() {
+async function checkAdminPwd() {
   const pwd = document.getElementById('adminPwd').value;
-  if (pwd === ADMIN_PWD || pwd === 'sramesh' || pwd === 'admin2026') {
+  if (await sha256Hex(pwd) === ADMIN_PWD_HASH) {
     document.getElementById('adminLogin').style.display = 'none';
     document.getElementById('adminContent').style.display = 'block';
     loadAdminAppList();
